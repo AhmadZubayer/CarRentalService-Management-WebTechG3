@@ -1,0 +1,96 @@
+
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+
+
+
+
+button {
+  font-family: 'Inter', sans-serif;
+}
+
+
+
+
+body {
+  background-color: #f9fafb;
+  font-family: 'Inter', sans-serif;
+}
+
+* {
+  font-family: inherit;
+}
+
+
+
+
+.navbar {
+  background-color: #1f2937;
+}
+
+
+
+
+.btn-1 {
+  background-color: #3949ab;
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  border-radius: 0;
+  border: none;
+  cursor: pointer;
+}
+
+
+
+
+.drawer {
+  width: 240px;
+  background-color: #ffffff;
+  height: 100vh;
+  padding: 16px 0;
+  font-family: 'Inter', sans-serif;
+  overflow-y: auto;
+}
+
+.drawer-section-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #6b7280;
+  padding: 16px 20px 6px 20px;
+}
+
+.drawer-item {
+  display: flex;
+  align-items: center;
+  padding: 9px 20px;
+  font-size: 14px;
+  font-weight: 400;
+  color: #374151;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.15s ease;
+}
+
+.drawer-item:hover {
+  background-color: #f3f4f6;
+}
+
+.drawer-item.active {
+  background-color: #eff6ff;
+  font-weight: 500;
+  color: #3949ab;
+}
+
+
+
+
+.container-card {
+  background: white;
+  padding: 30px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-bottom: 2rem;
+}
