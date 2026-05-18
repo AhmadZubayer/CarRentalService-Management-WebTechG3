@@ -1,9 +1,14 @@
 <?php
 $pageTitle = 'Blog Management';
-include 'admin_header.php';
+include 'public_header.php';
 ?>
 
+
 <link rel="stylesheet" href="blog.css">
+
+<script>
+        window.csrfToken = "<?= generate_csrf_token() ?>";
+    </script>
 
 <div class="container-card" id="blogFormCard">
     <div class="card-heading">

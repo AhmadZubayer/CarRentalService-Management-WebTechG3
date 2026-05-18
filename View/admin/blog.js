@@ -83,7 +83,7 @@ function fetchBlogs() {
                     <h4 class="blog-title">${escapeHtml(blog.title)}</h4>
                     <div class="blog-meta">By ${escapeHtml(blog.author_name)} | ${escapeHtml(blog.created_at)}</div>
                     <div class="blog-content">${escapeHtml(blog.content)}</div>
-                    ${canEdit || canDelete ? `<div class="delete-area">${canEdit ? `<button class="btn" style="background:#2563eb; color:#fff; margin-right:10px;" onclick="startEdit(${blog.id})">Edit</button>` : ""}${canDelete ? `<button class="btn btn-danger" onclick="deleteBlog(${blog.id})">Delete</button>` : ""}</div>` : ""}
+                    ${canEdit || canDelete ? `<div class="delete-area">${canEdit ? `<button class="btn btn-danger" style="background:#2563eb; color:#fff; margin-right:10px;" onclick="startEdit(${blog.id})">Edit</button>` : ""}${canDelete ? `<button class="btn btn-danger" onclick="deleteBlog(${blog.id})">Delete</button>` : ""}</div>` : ""}
                 </article>
             `;
 				})
