@@ -58,7 +58,7 @@ $currentPage = isset($currentPage) ? $currentPage : 'home';
         <?php if ($isLoggedIn) { ?>
             <a href="order_history.php" class="btn-2 <?php echo ($currentPage === 'orders') ? 'active' : ''; ?>">Order History</a>
         <?php } ?>
-        <a href="../../blog.php" class="btn-2 <?php echo ($currentPage === 'blog') ? 'active' : ''; ?>">Blog</a>
+        <a href="blog.php" class="btn-2 <?php echo ($currentPage === 'blog') ? 'active' : ''; ?>">Blog</a>
         <?php if ($isLoggedIn && $userRole === 'admin') { ?>
             <a href="../admin/dashboard.php" class="btn-2">Admin Panel</a>
         <?php } ?>

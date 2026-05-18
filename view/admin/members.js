@@ -15,7 +15,7 @@ function showToast(message, type) {
 
 function loadMembers() {
     var tbody = document.getElementById('membersTableBody');
-    tbody.innerHTML = '<tr><td colspan="7" class="loading-td">Loading...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" class="loading-td">Loading...</td></tr>';
 
     var xhr = new XMLHttpRequest();
     xhr.open('POST', '../../ajax_handler.php', true);
@@ -32,7 +32,7 @@ function loadMembers() {
 function renderMembersTable(data) {
     var tbody = document.getElementById('membersTableBody');
     if (!data || data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" class="loading-td">No members found.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" class="loading-td">No members found.</td></tr>';
         return;
     }
 
@@ -40,7 +40,6 @@ function renderMembersTable(data) {
     data.forEach(function(member) {
         var joinDate = new Date(member.created_at).toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' });
         html += '<tr>';
-        html += '<td style="color:#9ca3af">' + member.id + '</td>';
         html += '<td><strong>' + member.name + '</strong></td>';
         html += '<td>' + member.email + '</td>';
         html += '<td>' + (member.phone || '-') + '</td>';

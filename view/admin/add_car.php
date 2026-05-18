@@ -31,6 +31,7 @@ include 'admin_header.php';
                 <select id="carType" name="type">
                     <option value="">-- Select Type --</option>
                     <option value="Private Car">Private Car</option>
+                    <option value="Sports Car">Performance Car</option>
                     <option value="Microbus">Microbus</option>
                     <option value="Pick-up">Pick-up</option>
                     <option value="Other">Other</option>

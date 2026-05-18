@@ -33,7 +33,6 @@ include 'admin_header.php';
         <table>
             <thead>
                 <tr>
-                    <th>Order ID</th>
                     <th>Member</th>
                     <th>Car</th>
                     <th>Start Date</th>
@@ -46,7 +45,7 @@ include 'admin_header.php';
                 </tr>
             </thead>
             <tbody id="ordersTableBody">
-                <tr><td colspan="10" class="loading-td">Loading orders...</td></tr>
+                <tr><td colspan="9" class="loading-td">Loading orders...</td></tr>
             </tbody>
         </table>
     </div>

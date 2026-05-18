@@ -61,7 +61,7 @@ function handleCarRequest($conn) {
         }
 
         
-        $allowed_types = array('Private Car', 'Microbus', 'Pick-up', 'Other');
+        $allowed_types = array('Private Car','Sports Car', 'Microbus', 'Pick-up', 'Other');
         if (empty($_POST['type']) || !in_array($_POST['type'], $allowed_types)) {
             echo json_encode(array("status" => "error", "message" => "Please select a valid car type."));
             return;

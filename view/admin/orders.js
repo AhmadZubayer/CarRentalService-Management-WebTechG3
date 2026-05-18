@@ -17,7 +17,7 @@ function loadOrders() {
     var status = document.getElementById('filterStatus').value;
     var date   = document.getElementById('filterDate').value;
     var tbody  = document.getElementById('ordersTableBody');
-    tbody.innerHTML = '<tr><td colspan="10" class="loading-td">Loading...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="9" class="loading-td">Loading...</td></tr>';
 
     var params = 'module=order&action=getOrders&status=' + encodeURIComponent(status) + '&date=' + encodeURIComponent(date) + '&csrf_token=' + encodeURIComponent(window.csrfToken);
 
@@ -36,7 +36,7 @@ function loadOrders() {
 function renderOrdersTable(data) {
     var tbody = document.getElementById('ordersTableBody');
     if (!data || data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="10" class="loading-td">No orders found for the selected filters.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="9" class="loading-td">No orders found for the selected filters.</td></tr>';
         return;
     }
 
@@ -46,7 +46,6 @@ function renderOrdersTable(data) {
         var orderDate   = new Date(order.order_date).toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' });
 
         html += '<tr>';
-        html += '<td style="color:#9ca3af;font-weight:600">#' + order.id + '</td>';
         html += '<td><strong>' + order.member_name + '</strong><br><span style="font-size:11px;color:#9ca3af">' + order.member_email + '</span></td>';
         html += '<td>' + order.car_name + '<br><span style="font-size:11px;color:#9ca3af">' + order.car_model + ' - ' + order.car_type + '</span></td>';
         html += '<td style="font-size:12.5px">' + order.start_date + '</td>';

@@ -15,7 +15,7 @@ function showToast(message, type) {
 
 function loadCars() {
     var tbody = document.getElementById('carsTableBody');
-    tbody.innerHTML = '<tr><td colspan="8" class="loading-td">Loading...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" class="loading-td">Loading...</td></tr>';
 
     var xhr = new XMLHttpRequest();
     xhr.open('POST', '../../ajax_handler.php', true);
@@ -32,7 +32,7 @@ function loadCars() {
 function renderCarsTable(data) {
     var tbody = document.getElementById('carsTableBody');
     if (!data || data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" class="loading-td">No cars found. Go to Add Car to add your first car.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" class="loading-td">No cars found. Go to Add Car to add your first car.</td></tr>';
         return;
     }
 
@@ -47,7 +47,6 @@ function renderCarsTable(data) {
             : '<span class="badge badge-unavailable">Not Available</span>';
 
         html += '<tr>';
-        html += '<td style="color:#9ca3af">' + car.id + '</td>';
         html += '<td>' + imgHtml + '</td>';
         html += '<td><strong style="font-size:13.5px">' + car.name + '</strong><br><span style="font-size:11px;color:#9ca3af">' + car.model + '</span></td>';
         html += '<td>' + car.type + '</td>';
