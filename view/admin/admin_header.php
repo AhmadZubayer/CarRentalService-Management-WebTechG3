@@ -435,6 +435,9 @@ $currentPage  = basename($_SERVER['PHP_SELF'], '.php');
             <a href="orders.php" class="drawer-item <?= $currentPage === 'orders' ? 'active' : '' ?>">
                 Rent Orders
             </a>
+            <a href="blog.php" class="drawer-item <?= $currentPage === 'blog' ? 'active' : '' ?>">
+                Blog
+            </a>
 
             <div class="drawer-section-label" style="margin-top:auto"></div>
             <a href="../registration/logout.php" class="drawer-item" style="color:#dc2626; margin-top: 16px;">

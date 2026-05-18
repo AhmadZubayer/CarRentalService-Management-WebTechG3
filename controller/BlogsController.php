@@ -1,146 +1,110 @@
 <?php
-require_once __DIR__ . '/../model/BlogModel.php';
+include_once 'model/BlogModel.php';
 
-header('Content-Type: application/json; charset=utf-8');
-
-$method = $_SERVER['REQUEST_METHOD'];
-$blogId = getRequestedBlogId();
-
-switch ($method) {
-    case 'GET':
-        handleGet();
-        break;
-    case 'POST':
-        handlePost();
-        break;
-    case 'DELETE':
-        handleDelete($blogId);
-        break;
-    default:
-        respond(['success' => false, 'message' => 'Method not allowed.'], 405);
+function prepare_input($data) {
+    $data = trim($data);
+    $data = stripslashes($data);
+    $data = htmlspecialchars($data, ENT_QUOTES, 'UTF-8');
+    return $data;
 }
 
-function getRequestedBlogId(): ?int
-{
-    $pathInfo = $_SERVER['PATH_INFO'] ?? '';
-    $blogId = null;
-
-    if ($pathInfo) {
-        $segments = explode('/', trim($pathInfo, '/'));
-        if (!empty($segments[0]) && is_numeric($segments[0])) {
-            $blogId = (int)$segments[0];
-        }
-    }
-
-    if (!$blogId && isset($_GET['id']) && is_numeric($_GET['id'])) {
-        $blogId = (int)$_GET['id'];
-    }
-
-    return $blogId;
+function isLoggedIn() {
+    return isset($_SESSION['user_id']);
 }
 
-function currentUser()
-{
-    return $_SESSION['user'] ?? null;
-}
-
-function requireLogin()
-{
-    if (!currentUser()) {
-        header('Location: login.php');
-        exit;
-    }
-}
-
-function isAdmin(): bool
-{
+function isAdmin() {
     return isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
 }
 
-function respond(array $payload, int $status = 200): void
-{
-    http_response_code($status);
+function jsonResponse($payload, $statusCode = 200) {
+    http_response_code($statusCode);
+    header('Content-Type: application/json; charset=utf-8');
     echo json_encode($payload);
-    exit;
 }
 
-function handleGet(): void
-{
-    $blogs = getAllBlogs();
-    respond(['success' => true, 'blogs' => $blogs]);
-}
+function handleBlogRequest($conn) {
+    $action = isset($_POST['action']) ? $_POST['action'] : '';
 
-function handlePost(): void
-{
-    requireLogin();
+    if ($action === 'get') {
+        $blogs = getAllBlogs($conn);
+        jsonResponse(['status' => 'success', 'data' => ['blogs' => $blogs]]);
+        return;
+    }
 
-    [$title, $content] = validateBlogInput();
-    $user = currentUser();
-    $blogId = isset($_POST['blog_id']) && is_numeric($_POST['blog_id']) ? (int)$_POST['blog_id'] : null;
+    if ($action === 'save') {
+        if (!isLoggedIn()) {
+            jsonResponse(['status' => 'error', 'message' => 'Unauthorized'], 403);
+            return;
+        }
 
-    if ($blogId) {
-        $blog = getBlogById($blogId);
+        $title = prepare_input($_POST['title'] ?? '');
+        $content = prepare_input($_POST['content'] ?? '');
+        $blogId = isset($_POST['blog_id']) && is_numeric($_POST['blog_id']) ? (int) $_POST['blog_id'] : 0;
 
+        if ($title === '' || $content === '') {
+            jsonResponse(['status' => 'error', 'message' => 'Title and content are required.'], 400);
+            return;
+        }
+
+        if ($blogId > 0) {
+            $blog = getBlogById($conn, $blogId);
+            if (!$blog) {
+                jsonResponse(['status' => 'error', 'message' => 'Blog post not found.'], 404);
+                return;
+            }
+
+            if ($blog['user_id'] !== $_SESSION['user_id']) {
+                jsonResponse(['status' => 'error', 'message' => 'Not authorized to edit this post.'], 403);
+                return;
+            }
+
+            if (updateBlog($conn, $blogId, $title, $content)) {
+                jsonResponse(['status' => 'success', 'message' => 'Blog post updated successfully.', 'blog_id' => $blogId]);
+            } else {
+                jsonResponse(['status' => 'error', 'message' => 'Unable to update blog post.'], 500);
+            }
+            return;
+        }
+
+        $newBlogId = createBlog($conn, $_SESSION['user_id'], $title, $content);
+        if ($newBlogId) {
+            jsonResponse(['status' => 'success', 'message' => 'Blog post created successfully.', 'blog_id' => $newBlogId], 201);
+        } else {
+            jsonResponse(['status' => 'error', 'message' => 'Unable to save blog post.'], 500);
+        }
+        return;
+    }
+
+    if ($action === 'delete') {
+        if (!isLoggedIn()) {
+            jsonResponse(['status' => 'error', 'message' => 'Unauthorized'], 403);
+            return;
+        }
+
+        $blogId = isset($_POST['id']) && is_numeric($_POST['id']) ? (int) $_POST['id'] : 0;
+        if ($blogId <= 0) {
+            jsonResponse(['status' => 'error', 'message' => 'Invalid blog ID.'], 400);
+            return;
+        }
+
+        $blog = getBlogById($conn, $blogId);
         if (!$blog) {
-            respond(['success' => false, 'message' => 'Blog post not found.'], 404);
+            jsonResponse(['status' => 'error', 'message' => 'Blog post not found.'], 404);
+            return;
         }
 
-        if ($blog['user_id'] !== (int)$user['id']) {
-            respond(['success' => false, 'message' => 'Not authorized to edit this post.'], 403);
+        if (!isAdmin() && $blog['user_id'] !== $_SESSION['user_id']) {
+            jsonResponse(['status' => 'error', 'message' => 'Not authorized to delete this post.'], 403);
+            return;
         }
 
-        if (updateBlog($blogId, $title, $content)) {
-            respond(['success' => true, 'message' => 'Blog post updated successfully.', 'blog_id' => $blogId]);
+        if (deleteBlog($conn, $blogId)) {
+            jsonResponse(['status' => 'success', 'message' => 'Blog post deleted successfully.']);
+        } else {
+            jsonResponse(['status' => 'error', 'message' => 'Unable to delete blog post.'], 500);
         }
-
-        respond(['success' => false, 'message' => 'Unable to update blog post.'], 500);
+        return;
     }
 
-    $newBlogId = createBlog((int)$user['id'], $title, $content);
-
-    if ($newBlogId) {
-        respond(['success' => true, 'message' => 'Blog post created successfully.', 'blog_id' => $newBlogId], 201);
-    }
-
-    respond(['success' => false, 'message' => 'Unable to save blog post.'], 500);
-}
-
-function handleDelete(?int $blogId): void
-{
-    requireLogin();
-
-    if (!$blogId) {
-        respond(['success' => false, 'message' => 'Blog id is required.'], 400);
-    }
-
-    $blog = getBlogById($blogId);
-
-    if (!$blog) {
-        respond(['success' => false, 'message' => 'Blog post not found.'], 404);
-    }
-
-    $user = currentUser();
-    $ownsPost = $blog['user_id'] === (int)$user['id'];
-
-    if (!isAdmin() && !$ownsPost) {
-        respond(['success' => false, 'message' => 'Not authorized to delete this post.'], 403);
-    }
-
-    if (deleteBlog($blogId)) {
-        respond(['success' => true, 'message' => 'Blog post deleted successfully.']);
-    }
-
-    respond(['success' => false, 'message' => 'Unable to delete blog post.'], 500);
-}
-
-function validateBlogInput(): array
-{
-    $title = sanitizeInput($_POST['title'] ?? '');
-    $content = sanitizeInput($_POST['content'] ?? '');
-
-    if ($title === '' || $content === '') {
-        respond(['success' => false, 'message' => 'Title and content are required.'], 400);
-    }
-
-    return [$title, $content];
+    jsonResponse(['status' => 'error', 'message' => 'Unknown action.'], 400);
 }

@@ -1,9 +1,6 @@
 <?php
-require_once __DIR__ . '/../config/dbConfig.php';
 
-function getAllBlogs()
-{
-    global $conn;
+function getAllBlogs($conn) {
     $sql = 'SELECT b.id, b.user_id, b.title, b.content, b.created_at, u.name AS author_name
             FROM blogs b
             JOIN users u ON b.user_id = u.id
@@ -17,9 +14,7 @@ function getAllBlogs()
     return $blogs;
 }
 
-function createBlog(int $userId, string $title, string $content)
-{
-    global $conn;
+function createBlog($conn, int $userId, string $title, string $content) {
     $sql = 'INSERT INTO blogs (user_id, title, content) VALUES (?, ?, ?)';
     $stmt = mysqli_prepare($conn, $sql);
     mysqli_stmt_bind_param($stmt, 'iss', $userId, $title, $content);
@@ -27,9 +22,7 @@ function createBlog(int $userId, string $title, string $content)
     return mysqli_insert_id($conn);
 }
 
-function getBlogById(int $id)
-{
-    global $conn;
+function getBlogById($conn, int $id) {
     $sql = 'SELECT id, user_id, title, content, created_at FROM blogs WHERE id = ? LIMIT 1';
     $stmt = mysqli_prepare($conn, $sql);
     mysqli_stmt_bind_param($stmt, 'i', $id);
@@ -38,9 +31,7 @@ function getBlogById(int $id)
     return mysqli_fetch_assoc($result) ?: null;
 }
 
-function deleteBlog(int $id)
-{
-    global $conn;
+function deleteBlog($conn, int $id) {
     $sql = 'DELETE FROM blogs WHERE id = ?';
     $stmt = mysqli_prepare($conn, $sql);
     mysqli_stmt_bind_param($stmt, 'i', $id);
@@ -48,9 +39,7 @@ function deleteBlog(int $id)
     return mysqli_stmt_affected_rows($stmt) > 0;
 }
 
-function updateBlog(int $id, string $title, string $content)
-{
-    global $conn;
+function updateBlog($conn, int $id, string $title, string $content) {
     $sql = 'UPDATE blogs SET title = ?, content = ? WHERE id = ?';
     $stmt = mysqli_prepare($conn, $sql);
     mysqli_stmt_bind_param($stmt, 'ssi', $title, $content, $id);
